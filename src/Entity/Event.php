@@ -4,9 +4,12 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ApiResource()
+ * @ORM\HasLifecycleCallbacks()
+ * @UniqueEntity("name")
  * @ORM\Entity(repositoryClass="App\Repository\EventRepository")
  */
 class Event
@@ -43,6 +46,17 @@ class Event
      * @ORM\Column(type="text", length=255)
      */
     private $description;
+
+    /**
+     * @ORM\PostPersist()
+     */
+    private function setCreatedAtValue(): void
+    {
+        if ($this->createdAt === null) {
+            $this->createdAt = new \DateTime();
+        }
+    }
+
 
     public function getId(): ?int
     {
